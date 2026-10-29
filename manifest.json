@@ -1,0 +1,208 @@
+{
+    "name":  "cyber-odyssey-animation-kit",
+    "version":  "1.0.0",
+    "packagedAt":  "2026-10-15T10:24:11.3783642Z",
+    "description":  "Portable Cyber Odyssey logo animation (React component, assets, scripts, previews)",
+    "originalLogo":  {
+                         "kitPath":  "assets/original/CapriWebServices-Logo.png",
+                         "originatingPath":  "public/branding/CapriWebServices-Logo.png",
+                         "note":  "Brief mentioned public/branding/cyber-odyssey-logo.png; that file does not exist. CapriWebServices-Logo.png is the source of truth.",
+                         "sha256":  "2a2064f933be5575647b146a899686bc6137e9f123bb35cbb96ac045e0f04c5a",
+                         "matchesOriginatingFile":  true,
+                         "dimensions":  "921x725"
+                     },
+    "runtime":  {
+                    "component":  [
+                                      "component/CyberOdysseyLoader.tsx",
+                                      "component/CyberOdysseyLoader.module.css",
+                                      "component/cyberOdysseyArt.ts"
+                                  ],
+                    "assets":  [
+                                   "assets/generated/cyborg.png",
+                                   "assets/generated/cyborg-sm.png",
+                                   "assets/generated/cyborg-glow.png"
+                               ],
+                    "publicUrlPrefix":  "/branding/cyber-odyssey/"
+                },
+    "peerDependencies":  {
+                             "react":  "\u003e=18 (originated on 19.1.0)",
+                             "cssModules":  "required",
+                             "next":  "optional; source includes use client for App Router",
+                             "sharp":  "optional; scripts regeneration only"
+                         },
+    "integrity":  {
+                      "componentTsxMatchesOriginating":  true,
+                      "componentCssMatchesOriginating":  true,
+                      "artDataPayloadMatchesOriginating":  true,
+                      "artFileHeaderAdaptedForKit":  true,
+                      "svgIdsUniqueWithinEachFile":  true,
+                      "svgSharedIdsAcrossOrbitalAndOrbits":  [
+                                                                 "co-occ",
+                                                                 "co-stroke-inner",
+                                                                 "co-stroke-middle",
+                                                                 "co-stroke-outer",
+                                                                 "co-middle-lobe-0",
+                                                                 "co-middle-lobe-1",
+                                                                 "co-outer-lobe-0",
+                                                                 "co-outer-lobe-1"
+                                                             ]
+                  },
+    "files":  [
+                  {
+                      "path":  "assets/generated/cyber-odyssey-orbital.svg",
+                      "bytes":  255591,
+                      "sha256":  "f9e1aa5cb23b669890e6d296b6cfc3a8f70daa661c1c74efe173556caf904621",
+                      "purpose":  "Standalone self-contained animated SVG"
+                  },
+                  {
+                      "path":  "assets/generated/cyborg.png",
+                      "bytes":  129917,
+                      "sha256":  "c577b4d98d925e5c09be0e350f702e3b9a940fb68e51b3b164d644578c5cc830",
+                      "purpose":  "Runtime cyborg raster (hero/reveal)"
+                  },
+                  {
+                      "path":  "assets/generated/cyborg-glow.png",
+                      "bytes":  44502,
+                      "sha256":  "fbad1dec9ccbf060cec0e409f963470c6220961af55b1ba3f36ca9ecc3f4bd44",
+                      "purpose":  "Runtime glow raster"
+                  },
+                  {
+                      "path":  "assets/generated/cyborg-sm.png",
+                      "bytes":  31526,
+                      "sha256":  "a9d80ba0c6b37e58d6b5a90bef9cb1ec7767aab46ba6aebbbd26e93ffdaaae39",
+                      "purpose":  "Runtime cyborg raster (loader)"
+                  },
+                  {
+                      "path":  "assets/generated/orbits.svg",
+                      "bytes":  18520,
+                      "sha256":  "aedd1e368aeeb8614109348374f3aef033eafb718083c8b5455b4a37aa28a642",
+                      "purpose":  "Static vector orbits layer (optional)"
+                  },
+                  {
+                      "path":  "assets/original/CapriWebServices-Logo.png",
+                      "bytes":  330103,
+                      "sha256":  "2a2064f933be5575647b146a899686bc6137e9f123bb35cbb96ac045e0f04c5a",
+                      "purpose":  "Untouched original logo source (921x725)"
+                  },
+                  {
+                      "path":  "component/cyberOdysseyArt.ts",
+                      "bytes":  23980,
+                      "sha256":  "36bf2f0a9089684764825c214c28b168afd619b346ebfcb544bdf24fccb7f06a",
+                      "purpose":  "Generated geometry + public asset URL map (runtime)"
+                  },
+                  {
+                      "path":  "component/CyberOdysseyLoader.module.css",
+                      "bytes":  6852,
+                      "sha256":  "565a79611a3d1122b30bad3a596b3f2359a3b4e134e8a03f68948219a95d13c8",
+                      "purpose":  "Animation and accessibility CSS Modules (runtime)"
+                  },
+                  {
+                      "path":  "component/CyberOdysseyLoader.tsx",
+                      "bytes":  14469,
+                      "sha256":  "7bb4dec7a0008c1c3d10540cc2e85001060cb09bd83643f5fc56d2448796474b",
+                      "purpose":  "Reusable React animation component (runtime)"
+                  },
+                  {
+                      "path":  "docs/ORIGINAL_LOGO.md",
+                      "bytes":  628,
+                      "sha256":  "ead74d4fba1b903c97d13989961cba6887e632231ed9869b152789dcde9e04f4",
+                      "purpose":  "Clarifies original logo filename vs brief"
+                  },
+                  {
+                      "path":  "INTEGRATION_PROMPT.md",
+                      "bytes":  4952,
+                      "sha256":  "9b3f478e8cd10d3ad6247cd3e6135b5162f2aa3d795bd61b7b9c4b330e3b8796",
+                      "purpose":  "Ready-to-paste prompt for a future Cursor agent"
+                  },
+                  {
+                      "path":  "preview/next-app-reference/LogoAnimationPreview.tsx",
+                      "bytes":  7513,
+                      "sha256":  "058eb53fc6042dfa69c62759b2634cb217c7df966c2d944a9a034c522f194e4e",
+                      "purpose":  "Interactive preview client UI"
+                  },
+                  {
+                      "path":  "preview/next-app-reference/page.tsx",
+                      "bytes":  501,
+                      "sha256":  "65cd6b318018b871f85a6bf3ce21dac80e53c9165c4ee84a604f4ff163617617",
+                      "purpose":  "Next.js preview route shell"
+                  },
+                  {
+                      "path":  "preview/next-app-reference/README.md",
+                      "bytes":  1380,
+                      "sha256":  "b5e47eb936715bda2fdeae6a36d5e74f8db6ba94e436b044323969c1b8475e6f",
+                      "purpose":  "Notes for Next.js interactive preview"
+                  },
+                  {
+                      "path":  "preview/standalone/index.html",
+                      "bytes":  3591,
+                      "sha256":  "1ade0abed7556127f7a33314e1081723da5562246137519da4190e55aea32448",
+                      "purpose":  "Zero-React standalone SVG preview"
+                  },
+                  {
+                      "path":  "README.md",
+                      "bytes":  11726,
+                      "sha256":  "5948200a84069455b7ef38664e7e8d4ba3d673fd2a0e7ba9779fbbe1bf4ce887",
+                      "purpose":  "Kit documentation and inventory"
+                  },
+                  {
+                      "path":  "scripts/analyze-cyber-odyssey-logo.mjs",
+                      "bytes":  4754,
+                      "sha256":  "204c27cdd00e4542ddf8c1ecf459810477e2a4cd543f54e911d8a7a19b61b74a",
+                      "purpose":  "Read-only logo analysis"
+                  },
+                  {
+                      "path":  "scripts/cyber-odyssey-geometry.mjs",
+                      "bytes":  918,
+                      "sha256":  "3251a9c7a848b1da6a433147447a1feda386708f19df9e2d61be0c930d0659ea",
+                      "purpose":  "Fitted ellipse / planet seed measurements"
+                  },
+                  {
+                      "path":  "scripts/cyber-odyssey-measurements.json",
+                      "bytes":  2387,
+                      "sha256":  "ea21d56d9ec92ad3b044211416c9c8b706479fa9e1336d90de4c2ed9783e8aa3",
+                      "purpose":  "Measurement report including original logo hash"
+                  },
+                  {
+                      "path":  "scripts/cyber-odyssey-svg.mjs",
+                      "bytes":  9518,
+                      "sha256":  "bdeda7f5dd1b134d47c0442f221bab58b9e66c1da45a9dbb0e4b4306d5c8db00",
+                      "purpose":  "SVG builder shared by extract pipeline"
+                  },
+                  {
+                      "path":  "scripts/extract-cyber-odyssey-layers.mjs",
+                      "bytes":  38134,
+                      "sha256":  "ef07677f2bb08bb7721fd32d15c40d277eca4f766efc7fb95f2f194adf9ca5eb",
+                      "purpose":  "Layer extraction / regeneration pipeline"
+                  },
+                  {
+                      "path":  "scripts/inspect-cyber-odyssey-diff.mjs",
+                      "bytes":  1641,
+                      "sha256":  "75a5ce77282082ebeb77a64a09c368668ac06a7ef30012069f1a0fc68ed437cc",
+                      "purpose":  "Diff crop inspector"
+                  },
+                  {
+                      "path":  "scripts/inspect-cyber-odyssey-residue.mjs",
+                      "bytes":  1368,
+                      "sha256":  "5a0bf5a497d7166611dafa032ba5d505bb7e5c8fea7d98c8605f7c48f497b46f",
+                      "purpose":  "Cyborg residue inspector"
+                  },
+                  {
+                      "path":  "scripts/package.json",
+                      "bytes":  450,
+                      "sha256":  "f5d72a95551ea825142b01ebbad7f7025a57a3305bd973358083b08d5b6b032f",
+                      "purpose":  "Optional sharp dependency for regeneration"
+                  },
+                  {
+                      "path":  "scripts/README.md",
+                      "bytes":  1569,
+                      "sha256":  "7b39ab64f0f65b571fdd3c13262d2333389c7a55b57b8ae6c3d60b056999a35f",
+                      "purpose":  "Script usage and kit-local paths"
+                  },
+                  {
+                      "path":  "scripts/verify-kit-integrity.mjs",
+                      "bytes":  2703,
+                      "sha256":  "da1d2d095ba4b6b5e1238762a54bc9466ebc1f1a59b229e2ce1b56e90fbd5600",
+                      "purpose":  "Kit-local integrity verification"
+                  }
+              ]
+}

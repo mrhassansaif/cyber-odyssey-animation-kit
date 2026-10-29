@@ -1,0 +1,232 @@
+/*
+ * Cyber Odyssey orbital mark. Every moving part is a CSS transform on an SVG group whose local
+ * coordinate system is the orbit's own circle, so rotations travel along the true ellipse.
+ * Animated groups never carry a transform attribute (CSS would replace it).
+ */
+
+.root {
+    --co-speed: 1;
+    --co-rim: rgba(125, 211, 252, 0.34);
+    display: inline-block;
+    position: relative;
+    max-width: 100%;
+    aspect-ratio: 921 / 725;
+    line-height: 0;
+    vertical-align: middle;
+}
+
+.svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.spinOuter,
+.spinOuterCounter,
+.spinMiddle,
+.spinComet,
+.spinCometCounter,
+.spinInner,
+.spinInnerCounter,
+.planetDepth,
+.planetPop,
+.cometDepth,
+.innerDepth {
+    transform-box: view-box;
+    transform-origin: 0 0;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* scale = 1 + 0.045·sin(angle): planets swell slightly on the near side of the orbit */
+@keyframes planetDepth {
+    0%, 50%, 100% { transform: scale(1); }
+    8.333% { transform: scale(1.0225); }
+    16.667% { transform: scale(1.039); }
+    25% { transform: scale(1.045); }
+    33.333% { transform: scale(1.039); }
+    41.667% { transform: scale(1.0225); }
+    58.333% { transform: scale(0.9775); }
+    66.667% { transform: scale(0.961); }
+    75% { transform: scale(0.955); }
+    83.333% { transform: scale(0.961); }
+    91.667% { transform: scale(0.9775); }
+}
+
+/* particles: scale 1 ± 9 % and dim on the far side */
+@keyframes sparkDepth {
+    0%, 50%, 100% { transform: scale(1); opacity: 0.775; }
+    8.333% { transform: scale(1.045); opacity: 0.844; }
+    16.667% { transform: scale(1.078); opacity: 0.895; }
+    25% { transform: scale(1.09); opacity: 1; }
+    33.333% { transform: scale(1.078); opacity: 0.895; }
+    41.667% { transform: scale(1.045); opacity: 0.844; }
+    58.333% { transform: scale(0.955); opacity: 0.706; }
+    66.667% { transform: scale(0.922); opacity: 0.655; }
+    75% { transform: scale(0.91); opacity: 0.55; }
+    83.333% { transform: scale(0.922); opacity: 0.655; }
+    91.667% { transform: scale(0.955); opacity: 0.706; }
+}
+
+@keyframes glowPulse {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.38; }
+}
+
+.spinOuter { animation: spin calc(48s / var(--co-speed)) linear infinite; }
+.spinOuterCounter { animation: spin calc(48s / var(--co-speed)) linear infinite reverse; }
+.spinMiddle { animation: spin calc(36s / var(--co-speed)) linear infinite reverse; }
+.spinComet { animation: spin calc(11s / var(--co-speed)) linear infinite reverse; }
+.spinCometCounter { animation: spin calc(11s / var(--co-speed)) linear infinite; }
+.spinInner { animation: spin calc(8s / var(--co-speed)) linear infinite; }
+.spinInnerCounter { animation: spin calc(8s / var(--co-speed)) linear infinite reverse; }
+
+.planetDepth {
+    animation: planetDepth calc(48s / var(--co-speed)) linear infinite;
+    animation-delay: calc(var(--co-phase, 0) * -48s / var(--co-speed));
+}
+.cometDepth {
+    animation: sparkDepth calc(11s / var(--co-speed)) linear infinite reverse;
+    animation-delay: calc(var(--co-phase, 0) * -11s / var(--co-speed));
+}
+.innerDepth {
+    animation: sparkDepth calc(8s / var(--co-speed)) linear infinite;
+    animation-delay: calc(var(--co-phase, 0) * -8s / var(--co-speed));
+}
+
+.glow {
+    opacity: 0.1;
+    animation: glowPulse calc(5.2s / var(--co-speed)) ease-in-out infinite;
+}
+
+/* ------------------------------------------------------------------ dark surfaces */
+
+.rim,
+.rimFill {
+    display: none;
+}
+.rim {
+    stroke: var(--co-rim);
+}
+.rimFill {
+    fill: var(--co-rim);
+}
+.root[data-surface="dark"] .rim,
+.root[data-surface="dark"] .rimFill,
+:global(.dark) .root[data-surface="auto"] .rim,
+:global(.dark) .root[data-surface="auto"] .rimFill {
+    display: inline;
+}
+.root[data-surface="dark"] .cyborg,
+:global(.dark) .root[data-surface="auto"] .cyborg {
+    filter: drop-shadow(0 0 1.5px rgba(125, 211, 252, 0.45));
+}
+
+/* ------------------------------------------------------------------------ reveal */
+/*
+ * The mark fades in as one composited group (so nothing underneath a ring is ever exposed),
+ * a light sweep runs along each orbit in turn, the planets switch on, the cyborg's energy
+ * pulses once, and the particles join. The spins run throughout, so the hand-off into the
+ * loop has no seam.
+ */
+
+@keyframes introFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes sweep {
+    0% { stroke-dashoffset: 1; opacity: 0.7; }
+    68% { stroke-dashoffset: 0; opacity: 0.7; }
+    100% { stroke-dashoffset: 0; opacity: 0; }
+}
+@keyframes planetOn {
+    from { transform: scale(0.35); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+@keyframes particleOn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes glowIgnite {
+    0% { opacity: 0; }
+    55% { opacity: 0.62; }
+    100% { opacity: 0.1; }
+}
+
+.sweep {
+    display: none;
+}
+
+.root[data-variant="reveal"] .intro {
+    animation: introFade calc(0.7s / var(--co-speed)) cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.root[data-variant="reveal"] .sweep {
+    display: inline;
+    stroke: #67e8f9;
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 1;
+    opacity: 0;
+    animation: sweep calc(1.5s / var(--co-speed)) cubic-bezier(0.45, 0, 0.25, 1) both;
+    animation-delay: calc((0.3s + var(--co-order, 0) * 0.22s) / var(--co-speed));
+}
+.root[data-variant="reveal"] .planetPop {
+    animation: planetOn calc(0.55s / var(--co-speed)) cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc((1.05s + var(--co-order, 0) * 0.14s) / var(--co-speed));
+}
+.root[data-variant="reveal"] .particle {
+    animation: particleOn calc(0.6s / var(--co-speed)) ease-out both;
+    animation-delay: calc(1.7s / var(--co-speed));
+}
+.root[data-variant="reveal"] .glow {
+    animation:
+        glowIgnite calc(1.9s / var(--co-speed)) ease-in-out both,
+        glowPulse calc(5.2s / var(--co-speed)) ease-in-out calc(1.9s / var(--co-speed)) infinite;
+}
+
+/* ------------------------------------------------------------------ pause + motion */
+
+.root[data-paused="true"] * {
+    animation-play-state: paused !important;
+}
+
+@keyframes loaderBreath {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .root * {
+        animation: none !important;
+    }
+    .particle,
+    .sweep {
+        display: none !important;
+    }
+    .glow {
+        opacity: 0;
+    }
+    /* a status indicator still needs a sign of life: a slow opacity breath, no movement */
+    .root[data-variant="loader"] .intro {
+        animation: loaderBreath 2.4s ease-in-out infinite !important;
+    }
+}

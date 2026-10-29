@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cyber Odyssey — standalone SVG preview</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --fg: #e2e8f0;
+      --muted: #94a3b8;
+      --panel: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      background: linear-gradient(160deg, #0b1220 0%, #152238 55%, #1a2740 100%);
+      color: var(--fg);
+    }
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+    h1 { font-size: 1.35rem; margin: 0 0 0.35rem; font-weight: 650; }
+    p { margin: 0 0 1.25rem; color: var(--muted); line-height: 1.5; font-size: 0.95rem; }
+    code { font-size: 0.9em; }
+    .stage {
+      display: grid;
+      gap: 1.25rem;
+    }
+    .panel {
+      border-radius: 12px;
+      padding: 1.25rem;
+      background: var(--bg);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
+    }
+    .panel.light {
+      background: var(--panel);
+      color: #0f172a;
+    }
+    .panel.light p,
+    .panel.light h2 { color: #334155; }
+    .panel.checker {
+      background-color: #fff;
+      background-image: conic-gradient(#d9dde3 25%, transparent 0 50%, #d9dde3 0 75%, transparent 0);
+      background-size: 20px 20px;
+      color: #0f172a;
+    }
+    h2 {
+      margin: 0 0 0.75rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 650;
+    }
+    object, img {
+      display: block;
+      width: min(100%, 520px);
+      height: auto;
+      margin: 0 auto;
+    }
+    .note {
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Cyber Odyssey — standalone animated SVG</h1>
+    <p>
+      This preview opens the self-contained file
+      <code>assets/generated/cyber-odyssey-orbital.svg</code>
+      (embedded rasters + CSS motion). It does <strong>not</strong> exercise the React
+      component API (<code>loader</code> / <code>hero</code> / <code>reveal</code>, pause, speed, surface).
+      For the full interactive preview, use the originating Next.js route
+      <code>/preview/logo-animation</code> or adapt
+      <code>preview/next-app-reference/</code>.
+    </p>
+
+    <div class="stage">
+      <section class="panel">
+        <h2>Dark surface</h2>
+        <object type="image/svg+xml" data="../../assets/generated/cyber-odyssey-orbital.svg" title="Cyber Odyssey orbital animation"></object>
+      </section>
+
+      <section class="panel light">
+        <h2>Light surface</h2>
+        <object type="image/svg+xml" data="../../assets/generated/cyber-odyssey-orbital.svg" title="Cyber Odyssey orbital animation on light"></object>
+      </section>
+
+      <section class="panel checker">
+        <h2>Transparency check</h2>
+        <object type="image/svg+xml" data="../../assets/generated/cyber-odyssey-orbital.svg" title="Cyber Odyssey orbital animation on checkerboard"></object>
+      </section>
+    </div>
+
+    <p class="note">
+      Open this file via a local static server if your browser blocks
+      <code>file://</code> SVG object loads (for example
+      <code>npx --yes serve cyber-odyssey-animation-kit</code>
+      then visit <code>/preview/standalone/</code>).
+      Prefer reduced motion? Use the OS / browser prefers-reduced-motion setting;
+      the SVG’s CSS respects it for spin animations.
+    </p>
+  </main>
+</body>
+</html>

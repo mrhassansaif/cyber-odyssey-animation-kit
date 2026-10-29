@@ -1,0 +1,105 @@
+{
+  "source": {
+    "file": "assets/original/CapriWebServices-Logo.png",
+    "sha256": "2a2064f933be5575647b146a899686bc6137e9f123bb35cbb96ac045e0f04c5a",
+    "unchanged": true,
+    "size": "921x725"
+  },
+  "strokeWidth": 15.102,
+  "orbits": [
+    {
+      "id": "inner",
+      "measuredWidth": 15.102,
+      "centreBias": -0.088,
+      "visibleSamples": 276,
+      "rawOffsetMax": 0.89,
+      "modelledOffsetMax": 2.432,
+      "offsetResidualRms": 0.129,
+      "toneRms": 3.851,
+      "toneMax": 41.583,
+      "lobeSeparationDeg": null
+    },
+    {
+      "id": "middle",
+      "measuredWidth": 14.912,
+      "centreBias": -0.217,
+      "visibleSamples": 314,
+      "rawOffsetMax": 1.454,
+      "modelledOffsetMax": 2.279,
+      "offsetResidualRms": 0.234,
+      "toneRms": 2.372,
+      "toneMax": 6.958,
+      "lobeSeparationDeg": 166.88
+    },
+    {
+      "id": "outer",
+      "measuredWidth": 15.662,
+      "centreBias": 0.212,
+      "visibleSamples": 285,
+      "rawOffsetMax": 6.115,
+      "modelledOffsetMax": 6.042,
+      "offsetResidualRms": 0.245,
+      "toneRms": 5.501,
+      "toneMax": 13.55,
+      "lobeSeparationDeg": 166.69
+    }
+  ],
+  "planets": [
+    {
+      "cx": 260.043,
+      "cy": 281.937,
+      "r": 33.022,
+      "edgeResidual": 0.171,
+      "edgeSamples": 96,
+      "angleDeg": -106.25,
+      "rho": 0.998,
+      "color": "#000031"
+    },
+    {
+      "cx": 761.565,
+      "cy": 390.643,
+      "r": 35.566,
+      "edgeResidual": 0.277,
+      "edgeSamples": 96,
+      "angleDeg": 58.54,
+      "rho": 1.003,
+      "color": "#000032"
+    },
+    {
+      "cx": 54.38,
+      "cy": 524.428,
+      "r": 32.131,
+      "edgeResidual": 0.12,
+      "edgeSamples": 96,
+      "angleDeg": -156.76,
+      "rho": 0.991,
+      "color": "#010032"
+    }
+  ],
+  "cyborgLayer": {
+    "pixelsRemoved": 88667,
+    "orbitInkOutsideBands": 1463,
+    "edgeExtendedPixels": 1787,
+    "junctionPixelsDemixed": 190,
+    "fringeCleared": 6764,
+    "pixelsIdenticalToSource": 572112,
+    "pixelsChanged": 95613
+  },
+  "occluder": {
+    "loops": 1,
+    "pathLength": 1408
+  },
+  "staticReconstructionDiff": {
+    "white": {
+      "meanAbs": 2.034,
+      "pctOver16": 1.869,
+      "pctOver48": 1.078
+    },
+    "black": {
+      "meanAbs": 0.899,
+      "pctOver16": 1.041,
+      "pctOver48": 0.223
+    }
+  },
+  "validationDir": "C:\\Users\\Hassan\\AppData\\Local\\Temp\\cyber-odyssey-validation"
+}

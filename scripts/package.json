@@ -1,0 +1,14 @@
+{
+  "name": "cyber-odyssey-animation-kit-scripts",
+  "private": true,
+  "type": "module",
+  "description": "Optional tooling for regenerating / inspecting Cyber Odyssey layers. Not required at runtime.",
+  "scripts": {
+    "extract": "node extract-cyber-odyssey-layers.mjs",
+    "analyze": "node analyze-cyber-odyssey-logo.mjs",
+    "inspect:residue": "node inspect-cyber-odyssey-residue.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.3"
+  }
+}
