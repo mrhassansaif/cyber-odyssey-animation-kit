@@ -9,7 +9,7 @@ import { useState, type CSSProperties, type ReactNode } from "react";
  * Assumptions (see preview/next-app-reference/README.md):
  * - React client component ("use client")
  * - Tailwind CSS utility classes for the preview chrome only
- * - Runtime assets served at /branding/cyber-odyssey/*
+ * - No runtime assets: the component renders its vector artwork inline
  */
 import CyberOdysseyLoader, { type CyberOdysseySurface } from "../../component/CyberOdysseyLoader";
 

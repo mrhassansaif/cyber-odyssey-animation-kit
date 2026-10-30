@@ -9,20 +9,19 @@
  *
  * Source of truth (never modified): assets/original/CapriWebServices-Logo.png
  *
+ * LEGACY raster pipeline. The shipped artwork is now fully vector and is built by
+ * scripts/build-cyber-odyssey-vector.mjs; this script only refreshes the legacy reference layers.
+ *
  * Outputs
- *   assets/generated/cyborg.png
- *   assets/generated/cyborg-sm.png
- *   assets/generated/cyborg-glow.png
- *   assets/generated/orbits.svg
- *   assets/generated/cyber-odyssey-orbital.svg
- *   component/cyberOdysseyArt.ts
+ *   assets/generated/cyborg.png        (legacy reference)
+ *   assets/generated/cyborg-sm.png     (legacy reference)
+ *   assets/generated/cyborg-glow.png   (legacy reference)
+ *   assets/generated/orbits.svg        (legacy reference)
  *   scripts/cyber-odyssey-measurements.json
  *
- * Validation renders are written to the OS temp directory (cyber-odyssey-validation/).
- *
- * NOTE: Asset URL paths written into cyberOdysseyArt.ts remain
- * `/branding/cyber-odyssey/...` so integrators can drop generated files into a
- * project's `public/branding/cyber-odyssey/` (or equivalent) without editing the component.
+ * Validation renders, the legacy raster-based animated SVG and the legacy geometry module are
+ * written to the OS temp directory (cyber-odyssey-validation/) so they never replace the vector
+ * deliverables (assets/generated/cyber-odyssey-orbital.svg, component/cyberOdysseyArt.ts).
  */
 import sharp from "sharp";
 import fs from "fs";
@@ -36,9 +35,9 @@ import { buildOrbitalSvg } from "./cyber-odyssey-svg.mjs";
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = path.join(root, "assets", "original", "CapriWebServices-Logo.png");
 const OUT_DIR = path.join(root, "assets", "generated");
-const DATA_TS = path.join(root, "component", "cyberOdysseyArt.ts");
 const REPORT = path.join(root, "scripts", "cyber-odyssey-measurements.json");
 const VAL_DIR = path.join(os.tmpdir(), "cyber-odyssey-validation");
+const DATA_TS = path.join(VAL_DIR, "legacy-cyberOdysseyArt.ts");
 fs.mkdirSync(OUT_DIR, { recursive: true });
 fs.mkdirSync(VAL_DIR, { recursive: true });
 
@@ -726,7 +725,7 @@ const glowPng = fs.readFileSync(path.join(OUT_DIR, "cyborg-glow.png"));
 
 fs.writeFileSync(path.join(OUT_DIR, "orbits.svg"), buildOrbitalSvg(art, { mode: "orbits-only" }));
 fs.writeFileSync(
-    path.join(OUT_DIR, "cyber-odyssey-orbital.svg"),
+    path.join(VAL_DIR, "legacy-raster-orbital.svg"),
     buildOrbitalSvg(art, { mode: "animated", cyborgHref: toDataUri(cyborgPng), glowHref: toDataUri(glowPng) })
 );
 

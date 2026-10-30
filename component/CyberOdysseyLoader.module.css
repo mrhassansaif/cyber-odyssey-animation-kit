@@ -1,12 +1,13 @@
 /*
- * Cyber Odyssey orbital mark. Every moving part is a CSS transform on an SVG group whose local
- * coordinate system is the orbit's own circle, so rotations travel along the true ellipse.
- * Animated groups never carry a transform attribute (CSS would replace it).
+ * Cyber Odyssey orbital mark (fully vector). Every moving part is a CSS transform on an SVG group
+ * whose local coordinate system is the orbit's own circle, so rotations travel along the true
+ * ellipse. Animated groups never carry a transform attribute (CSS would replace it).
+ * Per-element timing comes from --co-period (seconds per revolution) divided by --co-speed.
  */
 
 .root {
     --co-speed: 1;
-    --co-rim: rgba(125, 211, 252, 0.34);
+    --co-rim: rgba(125, 211, 252, 0.3);
     display: inline-block;
     position: relative;
     max-width: 100%;
@@ -34,17 +35,9 @@
     border: 0;
 }
 
-.spinOuter,
-.spinOuterCounter,
-.spinMiddle,
-.spinComet,
-.spinCometCounter,
-.spinInner,
-.spinInnerCounter,
+.spin,
 .planetDepth,
-.planetPop,
-.cometDepth,
-.innerDepth {
+.planetPop {
     transform-box: view-box;
     transform-origin: 0 0;
 }
@@ -58,65 +51,53 @@
     }
 }
 
-/* scale = 1 + 0.045·sin(angle): planets swell slightly on the near side of the orbit */
+/* scale = 1 + 0.06·sin(angle): planets swell slightly on the near side of their orbit */
 @keyframes planetDepth {
     0%, 50%, 100% { transform: scale(1); }
-    8.333% { transform: scale(1.0225); }
-    16.667% { transform: scale(1.039); }
-    25% { transform: scale(1.045); }
-    33.333% { transform: scale(1.039); }
-    41.667% { transform: scale(1.0225); }
-    58.333% { transform: scale(0.9775); }
-    66.667% { transform: scale(0.961); }
-    75% { transform: scale(0.955); }
-    83.333% { transform: scale(0.961); }
-    91.667% { transform: scale(0.9775); }
+    8.333% { transform: scale(1.03); }
+    16.667% { transform: scale(1.052); }
+    25% { transform: scale(1.06); }
+    33.333% { transform: scale(1.052); }
+    41.667% { transform: scale(1.03); }
+    58.333% { transform: scale(0.97); }
+    66.667% { transform: scale(0.948); }
+    75% { transform: scale(0.94); }
+    83.333% { transform: scale(0.948); }
+    91.667% { transform: scale(0.97); }
 }
 
-/* particles: scale 1 ± 9 % and dim on the far side */
-@keyframes sparkDepth {
-    0%, 50%, 100% { transform: scale(1); opacity: 0.775; }
-    8.333% { transform: scale(1.045); opacity: 0.844; }
-    16.667% { transform: scale(1.078); opacity: 0.895; }
-    25% { transform: scale(1.09); opacity: 1; }
-    33.333% { transform: scale(1.078); opacity: 0.895; }
-    41.667% { transform: scale(1.045); opacity: 0.844; }
-    58.333% { transform: scale(0.955); opacity: 0.706; }
-    66.667% { transform: scale(0.922); opacity: 0.655; }
-    75% { transform: scale(0.91); opacity: 0.55; }
-    83.333% { transform: scale(0.922); opacity: 0.655; }
-    91.667% { transform: scale(0.955); opacity: 0.706; }
+@keyframes highlight {
+    from { stroke-dashoffset: var(--co-hl-from); }
+    to { stroke-dashoffset: var(--co-hl-to); }
 }
 
-@keyframes glowPulse {
-    0%, 100% { opacity: 0.1; }
-    50% { opacity: 0.38; }
+@keyframes pulse {
+    0%, 100% { opacity: 0; }
+    50% { opacity: var(--co-pulse, 0.55); }
 }
 
-.spinOuter { animation: spin calc(48s / var(--co-speed)) linear infinite; }
-.spinOuterCounter { animation: spin calc(48s / var(--co-speed)) linear infinite reverse; }
-.spinMiddle { animation: spin calc(36s / var(--co-speed)) linear infinite reverse; }
-.spinComet { animation: spin calc(11s / var(--co-speed)) linear infinite reverse; }
-.spinCometCounter { animation: spin calc(11s / var(--co-speed)) linear infinite; }
-.spinInner { animation: spin calc(8s / var(--co-speed)) linear infinite; }
-.spinInnerCounter { animation: spin calc(8s / var(--co-speed)) linear infinite reverse; }
-
+.spin {
+    animation: spin calc(var(--co-period) / var(--co-speed)) linear infinite;
+}
 .planetDepth {
-    animation: planetDepth calc(48s / var(--co-speed)) linear infinite;
-    animation-delay: calc(var(--co-phase, 0) * -48s / var(--co-speed));
+    animation: planetDepth calc(var(--co-period) / var(--co-speed)) linear infinite;
+    animation-delay: calc(var(--co-phase, 0) * -1 * var(--co-period) / var(--co-speed));
 }
-.cometDepth {
-    animation: sparkDepth calc(11s / var(--co-speed)) linear infinite reverse;
-    animation-delay: calc(var(--co-phase, 0) * -11s / var(--co-speed));
+.spin.reverse,
+.planetDepth.reverse {
+    animation-direction: reverse;
 }
-.innerDepth {
-    animation: sparkDepth calc(8s / var(--co-speed)) linear infinite;
-    animation-delay: calc(var(--co-phase, 0) * -8s / var(--co-speed));
+.highlight {
+    animation: highlight calc(var(--co-period) / var(--co-speed)) linear infinite;
+}
+.pulse {
+    opacity: 0;
+    animation: pulse calc(5.2s / var(--co-speed)) ease-in-out infinite;
 }
 
-.glow {
-    opacity: 0.1;
-    animation: glowPulse calc(5.2s / var(--co-speed)) ease-in-out infinite;
+/* compact loader: rings drawn heavier so they survive 48–128 px */
+.root[data-variant="loader"] .ring {
+    stroke-width: calc(var(--co-sw) * 1.7px);
 }
 
 /* ------------------------------------------------------------------ dark surfaces */
@@ -137,17 +118,12 @@
 :global(.dark) .root[data-surface="auto"] .rimFill {
     display: inline;
 }
-.root[data-surface="dark"] .cyborg,
-:global(.dark) .root[data-surface="auto"] .cyborg {
-    filter: drop-shadow(0 0 1.5px rgba(125, 211, 252, 0.45));
-}
 
 /* ------------------------------------------------------------------------ reveal */
 /*
- * The mark fades in as one composited group (so nothing underneath a ring is ever exposed),
- * a light sweep runs along each orbit in turn, the planets switch on, the cyborg's energy
- * pulses once, and the particles join. The spins run throughout, so the hand-off into the
- * loop has no seam.
+ * The mark fades in as one composited group, a light sweep runs along each orbit in turn
+ * (inner first), the planets switch on, the grille's energy pulses once, and the travelling
+ * highlight joins. The spins run throughout, so the hand-off into the loop has no seam.
  */
 
 @keyframes introFade {
@@ -155,8 +131,8 @@
     to { opacity: 1; }
 }
 @keyframes sweep {
-    0% { stroke-dashoffset: 1; opacity: 0.7; }
-    68% { stroke-dashoffset: 0; opacity: 0.7; }
+    0% { stroke-dashoffset: 1; opacity: 0.75; }
+    68% { stroke-dashoffset: 0; opacity: 0.75; }
     100% { stroke-dashoffset: 0; opacity: 0; }
 }
 @keyframes planetOn {
@@ -167,10 +143,10 @@
     from { opacity: 0; }
     to { opacity: 1; }
 }
-@keyframes glowIgnite {
+@keyframes pulseIgnite {
     0% { opacity: 0; }
-    55% { opacity: 0.62; }
-    100% { opacity: 0.1; }
+    55% { opacity: 0.85; }
+    100% { opacity: 0; }
 }
 
 .sweep {
@@ -197,10 +173,10 @@
     animation: particleOn calc(0.6s / var(--co-speed)) ease-out both;
     animation-delay: calc(1.7s / var(--co-speed));
 }
-.root[data-variant="reveal"] .glow {
+.root[data-variant="reveal"] .pulse {
     animation:
-        glowIgnite calc(1.9s / var(--co-speed)) ease-in-out both,
-        glowPulse calc(5.2s / var(--co-speed)) ease-in-out calc(1.9s / var(--co-speed)) infinite;
+        pulseIgnite calc(1.9s / var(--co-speed)) ease-in-out both,
+        pulse calc(5.2s / var(--co-speed)) ease-in-out calc(1.9s / var(--co-speed)) infinite;
 }
 
 /* ------------------------------------------------------------------ pause + motion */
@@ -215,14 +191,18 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .root * {
+    .root *:not(.planetDepth) {
         animation: none !important;
+    }
+    /* held on its first frame, so each planet keeps the size it has in the static logo */
+    .planetDepth {
+        animation-play-state: paused !important;
     }
     .particle,
     .sweep {
         display: none !important;
     }
-    .glow {
+    .pulse {
         opacity: 0;
     }
     /* a status indicator still needs a sign of life: a slow opacity breath, no movement */

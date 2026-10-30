@@ -3,111 +3,111 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cyber Odyssey — standalone SVG preview</title>
+  <title>Capri Web Services — Cyber Odyssey SVG preview</title>
   <style>
-    :root {
-      --bg: #0b1220;
-      --fg: #e2e8f0;
-      --muted: #94a3b8;
-      --panel: #ffffff;
-    }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      min-height: 100vh;
-      font-family: ui-sans-serif, system-ui, sans-serif;
-      background: linear-gradient(160deg, #0b1220 0%, #152238 55%, #1a2740 100%);
-      color: var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
     }
     main {
-      max-width: 960px;
+      max-width: 1120px;
       margin: 0 auto;
-      padding: 2rem 1.25rem 3rem;
+      padding: 2.5rem 1.25rem 3rem;
     }
-    h1 { font-size: 1.35rem; margin: 0 0 0.35rem; font-weight: 650; }
-    p { margin: 0 0 1.25rem; color: var(--muted); line-height: 1.5; font-size: 0.95rem; }
-    code { font-size: 0.9em; }
-    .stage {
-      display: grid;
-      gap: 1.25rem;
+    h1 { font-size: 1.25rem; font-weight: 650; margin: 0 0 0.4rem; }
+    p { margin: 0 0 1.5rem; color: #475569; line-height: 1.55; font-size: 0.92rem; }
+    code { font-size: 0.88em; }
+    .surface {
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
     }
-    .panel {
-      border-radius: 12px;
-      padding: 1.25rem;
-      background: var(--bg);
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
-    }
-    .panel.light {
-      background: var(--panel);
-      color: #0f172a;
-    }
-    .panel.light p,
-    .panel.light h2 { color: #334155; }
-    .panel.checker {
-      background-color: #fff;
-      background-image: conic-gradient(#d9dde3 25%, transparent 0 50%, #d9dde3 0 75%, transparent 0);
-      background-size: 20px 20px;
-      color: #0f172a;
-    }
-    h2 {
-      margin: 0 0 0.75rem;
-      font-size: 0.75rem;
-      letter-spacing: 0.06em;
+    .surface.dark { background: #0b1220; color: #e2e8f0; }
+    .surface.light { background: #ffffff; box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08); }
+    .surface h2 {
+      margin: 0 0 1rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--muted);
       font-weight: 650;
+      opacity: 0.7;
     }
-    object, img {
-      display: block;
-      width: min(100%, 520px);
-      height: auto;
-      margin: 0 auto;
+    .pair {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
     }
-    .note {
+    figure { margin: 0; }
+    figure img { display: block; width: 100%; height: auto; }
+    figcaption { margin-top: 0.6rem; font-size: 0.78rem; opacity: 0.65; }
+    .sizes {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 1.5rem;
       margin-top: 1.5rem;
-      font-size: 0.85rem;
-      color: var(--muted);
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.25);
     }
+    .sizes img { display: block; height: auto; }
   </style>
 </head>
 <body>
   <main>
-    <h1>Cyber Odyssey — standalone animated SVG</h1>
+    <h1>Capri Web Services — Cyber Odyssey mark</h1>
     <p>
-      This preview opens the self-contained file
-      <code>assets/generated/cyber-odyssey-orbital.svg</code>
-      (embedded rasters + CSS motion). It does <strong>not</strong> exercise the React
-      component API (<code>loader</code> / <code>hero</code> / <code>reveal</code>, pause, speed, surface).
-      For the full interactive preview, use the originating Next.js route
-      <code>/preview/logo-animation</code> or adapt
-      <code>preview/next-app-reference/</code>.
+      Both files below are loaded directly from <code>assets/generated/</code>:
+      <code>cyber-odyssey-orbital.svg</code> (animated, SVG-embedded CSS, honours
+      <code>prefers-reduced-motion</code>) and <code>capri-web-services-logo.svg</code> (static).
+      Both are pure vector artwork with transparent backgrounds. If your browser blocks
+      <code>file://</code> images, serve the kit folder (for example <code>npx --yes serve .</code>)
+      and open <code>/preview/standalone/</code>.
     </p>
 
-    <div class="stage">
-      <section class="panel">
-        <h2>Dark surface</h2>
-        <object type="image/svg+xml" data="../../assets/generated/cyber-odyssey-orbital.svg" title="Cyber Odyssey orbital animation"></object>
-      </section>
+    <section class="surface dark">
+      <h2>Dark surface</h2>
+      <div class="pair">
+        <figure>
+          <img src="../../assets/generated/cyber-odyssey-orbital.svg" alt="Capri Web Services animated logo" />
+          <figcaption>Animated · cyber-odyssey-orbital.svg</figcaption>
+        </figure>
+        <figure>
+          <img src="../../assets/generated/capri-web-services-logo.svg" alt="Capri Web Services logo" />
+          <figcaption>Static · capri-web-services-logo.svg</figcaption>
+        </figure>
+      </div>
+      <div class="sizes">
+        <img src="../../assets/generated/capri-web-services-logo.svg" width="32" alt="" />
+        <img src="../../assets/generated/capri-web-services-logo.svg" width="64" alt="" />
+        <img src="../../assets/generated/capri-web-services-logo.svg" width="128" alt="" />
+        <img src="../../assets/generated/cyber-odyssey-orbital.svg" width="64" alt="" />
+        <img src="../../assets/generated/cyber-odyssey-orbital.svg" width="128" alt="" />
+      </div>
+    </section>
 
-      <section class="panel light">
-        <h2>Light surface</h2>
-        <object type="image/svg+xml" data="../../assets/generated/cyber-odyssey-orbital.svg" title="Cyber Odyssey orbital animation on light"></object>
-      </section>
-
-      <section class="panel checker">
-        <h2>Transparency check</h2>
-        <object type="image/svg+xml" data="../../assets/generated/cyber-odyssey-orbital.svg" title="Cyber Odyssey orbital animation on checkerboard"></object>
-      </section>
-    </div>
-
-    <p class="note">
-      Open this file via a local static server if your browser blocks
-      <code>file://</code> SVG object loads (for example
-      <code>npx --yes serve cyber-odyssey-animation-kit</code>
-      then visit <code>/preview/standalone/</code>).
-      Prefer reduced motion? Use the OS / browser prefers-reduced-motion setting;
-      the SVG’s CSS respects it for spin animations.
-    </p>
+    <section class="surface light">
+      <h2>Light surface</h2>
+      <div class="pair">
+        <figure>
+          <img src="../../assets/generated/cyber-odyssey-orbital.svg" alt="Capri Web Services animated logo" />
+          <figcaption>Animated · cyber-odyssey-orbital.svg</figcaption>
+        </figure>
+        <figure>
+          <img src="../../assets/generated/capri-web-services-logo.svg" alt="Capri Web Services logo" />
+          <figcaption>Static · capri-web-services-logo.svg</figcaption>
+        </figure>
+      </div>
+      <div class="sizes">
+        <img src="../../assets/generated/capri-web-services-logo.svg" width="32" alt="" />
+        <img src="../../assets/generated/capri-web-services-logo.svg" width="64" alt="" />
+        <img src="../../assets/generated/capri-web-services-logo.svg" width="128" alt="" />
+        <img src="../../assets/generated/cyber-odyssey-orbital.svg" width="64" alt="" />
+        <img src="../../assets/generated/cyber-odyssey-orbital.svg" width="128" alt="" />
+      </div>
+    </section>
   </main>
 </body>
 </html>

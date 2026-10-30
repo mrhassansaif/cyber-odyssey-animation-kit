@@ -26,26 +26,27 @@ The kit folder path is:
    - The component ships with `"use client"` (Next.js App Router client boundary). Keep it in Next App Router; for other React setups, apply the equivalent client/browser boundary if required.
    - CSS Modules are required for `CyberOdysseyLoader.module.css` (or carefully rewrite to the project’s CSS approach while preserving selectors/animations).
    - `surface="auto"` depends on an ancestor with class `.dark` (`:global(.dark)` in the module). Map this to the destination theme convention.
-   - Runtime image URLs in `cyberOdysseyArt.ts` are `/branding/cyber-odyssey/cyborg.png`, `cyborg-sm.png`, and `cyborg-glow.png`. Copy `assets/generated/*` into the destination’s public asset root so those URLs resolve, **or** update `CYBER_ODYSSEY_ASSETS` to match the destination asset system. Prefer matching the existing public path if the project can host that folder.
+   - The component renders fully vector artwork inline from `cyberOdysseyArt.ts`; it loads **no** image files. Only if the project also wants the standalone SVGs (`capri-web-services-logo.svg`, `cyber-odyssey-orbital.svg`), copy them into the public asset root so the `CYBER_ODYSSEY_ASSETS` URLs (`/branding/cyber-odyssey/*.svg`) resolve, or update those URLs.
 
 5. **Preserve the public API and behavior**, including:
    - Variants: `loader` | `hero` | `reveal`
-   - Stationary cyborg artwork; independently animated orbital rings
-   - Planet positioning / layering; seamless loops
-   - Glow + particle effects
+   - Stationary cyborg artwork; planets orbiting at independent speeds and directions
+   - Front/back layering and occlusion; seamless loops
+   - Travelling ring highlight + grille energy pulse
    - `paused`, `speed`, `size`, `label`, `decorative`, `surface`
    - Reveal replay (remount / key) and `onRevealComplete`
    - `prefers-reduced-motion` handling
    - Responsive sizing and accessibility semantics (`role="status"` / `role="img"` / `aria-hidden`)
 
 6. **Copy assets correctly.**
-   - Runtime: `cyborg.png`, `cyborg-sm.png`, `cyborg-glow.png` (required by the React component)
-   - Optional reusable standalone: `cyber-odyssey-orbital.svg` (self-contained animated SVG)
-   - Optional static layer: `orbits.svg`
+   - Runtime: none — the React component is self-contained vector code.
+   - Optional static logo: `capri-web-services-logo.svg` (clean, non-animated, fully vector)
+   - Optional animated logo: `cyber-odyssey-orbital.svg` (self-contained, SVG-embedded CSS)
+   - Legacy reference only (do not ship): `cyborg*.png`, `orbits.svg`
    - Original reference (not required at runtime): `assets/original/CapriWebServices-Logo.png`
    - Update paths if the destination does not use `/branding/cyber-odyssey/`.
 
-7. **Dependencies.** Runtime peer needs: **React** (hooks: `useEffect`, `useId`, `useRef`), **TypeScript** (or strip types), **CSS Modules**. Do **not** add animation libraries. Reuse existing React / tooling. `sharp` is only for optional asset regeneration inside the kit’s `scripts/` and must not be added to the app unless the user wants regeneration in-repo.
+7. **Dependencies.** Runtime peer needs: **React** (hooks: `useEffect`, `useId`, `useRef`), **TypeScript** (or strip types), **CSS Modules**. Do **not** add animation libraries. Reuse existing React / tooling. The vector artwork is regenerated with plain Node (`scripts/build-cyber-odyssey-vector.mjs`); `sharp` is only for the kit’s legacy raster pipeline and must not be added to the app.
 
 8. **Scope control.** Do not modify unrelated UI, layout, navigation, branding, marketing copy, or website behavior. Touch only what integration requires.
 

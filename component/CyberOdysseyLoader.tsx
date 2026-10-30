@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useId, useRef, type AnimationEvent, type CSSProperties, type Ref } from "react";
-import { CYBER_ODYSSEY_ART as ART, CYBER_ODYSSEY_ASSETS as ASSETS, type OrbitArt } from "./cyberOdysseyArt";
+import { useEffect, useId, useRef, type AnimationEvent, type CSSProperties, type ReactNode, type Ref } from "react";
+import { CYBER_ODYSSEY_ART as ART, type OrbitArt, type PlanetArt } from "./cyberOdysseyArt";
 import styles from "./CyberOdysseyLoader.module.css";
 
 export type CyberOdysseyVariant = "loader" | "hero" | "reveal";
@@ -21,8 +21,8 @@ export type CyberOdysseyLoaderProps = {
     /** Hide from assistive technology when the mark sits next to visible brand text. Ignored by the loader. */
     decorative?: boolean;
     /**
-     * Legibility on dark backgrounds: "dark" adds a faint cyan rim to the navy orbits and dome,
-     * "light" keeps the original artwork, "auto" follows the site's `.dark` theme class.
+     * Legibility on dark backgrounds: "dark" adds a faint cyan rim to the indigo orbits and planets,
+     * "light" keeps the plain artwork, "auto" follows the site's `.dark` theme class.
      */
     surface?: CyberOdysseySurface;
     /** Fires once the reveal sequence has finished and the mark has settled into its loop. */
@@ -31,20 +31,10 @@ export type CyberOdysseyLoaderProps = {
     style?: CSSProperties;
 };
 
-const { width: VW, height: VH } = ART.viewBox;
-
-const PLANET_DEPTH = 0.045;
-
-const COMET = { orbit: "middle", start: 118, glow: 13 } as const;
-const INNER_SPARK = { orbit: "inner", start: 52, glow: 11 } as const;
-
-/** Trailing cyan highlight lobes for the comet (relative to its head, which leads counter-clockwise). */
-const COMET_LOBES = [
-    { angle: 46, p0: 0.86, color: "#22d3ee", opacity: 0.16 },
-    { angle: 26, p0: 0.9, color: "#22d3ee", opacity: 0.3 },
-    { angle: 9, p0: 0.955, color: "#67e8f9", opacity: 0.55 },
-    { angle: 0, p0: 0.985, color: "#cffafe", opacity: 0.85 },
-] as const;
+const VB = ART.viewBox;
+const C = ART.cyborg;
+const HL = ART.highlight;
+const LEAD = Math.max(...HL.layers.map((l) => l.length));
 
 const orbit = (id: OrbitArt["id"]) => ART.orbits.find((o) => o.id === id)!;
 const frame = (o: OrbitArt) => `translate(${o.cx} ${o.cy}) rotate(${o.rotation}) scale(${o.rx} ${o.ry})`;
@@ -56,8 +46,8 @@ const phase = (angle: number, direction: 1 | -1) => {
     const a = ((angle % 360) + 360) % 360;
     return direction > 0 ? a / 360 : ((360 - a) % 360) / 360;
 };
-const unit = (deg: number) => [Math.cos((deg * Math.PI) / 180), Math.sin((deg * Math.PI) / 180)] as const;
 const vars = (v: Record<string, string | number>) => v as CSSProperties;
+const cx = (...names: (string | false | undefined)[]) => names.filter(Boolean).join(" ");
 
 export default function CyberOdysseyLoader({
     variant = "hero",
@@ -77,10 +67,10 @@ export default function CyberOdysseyLoader({
     const revealDone = useRef(false);
 
     const isLoader = variant === "loader";
+    const isReveal = variant === "reveal";
     const name = label ?? (isLoader ? "Loading" : "Capri Web Services");
     const width = size ?? (isLoader ? 64 : "100%");
     const effectiveSpeed = speed ?? (isLoader ? 1.5 : 1);
-    const sparkBoost = isLoader ? 2.4 : 1;
 
     const completeReveal = () => {
         if (revealDone.current) return;
@@ -100,20 +90,111 @@ export default function CyberOdysseyLoader({
     }, [variant]);
 
     const onAnimationEnd = (e: AnimationEvent) => {
-        if (variant === "reveal" && e.target === finalParticleRef.current) completeReveal();
+        if (isReveal && e.target === finalParticleRef.current) completeReveal();
     };
 
-    const outer = orbit("outer");
     const semantics = isLoader
         ? { role: "status", "aria-live": "polite" as const }
         : decorative
           ? { "aria-hidden": true }
           : { role: "img", "aria-label": name };
 
+    const timing = (o: OrbitArt) => vars({ "--co-period": `${o.period}s` });
+
+    /** A planet riding its orbit's rotating plane, counter-rotated so it stays round. */
+    const planet = (p: PlanetArt, k: number) => {
+        const o = orbit(p.orbit);
+        return (
+            <g key={p.id} transform={frame(o)}>
+                <g className={cx(styles.spin, o.direction < 0 && styles.reverse)} style={timing(o)}>
+                    <g transform={`rotate(${p.angle}) translate(1 0)`}>
+                        <g className={cx(styles.spin, o.direction > 0 && styles.reverse)} style={timing(o)}>
+                            <g transform={unframe(o, p.angle)}>
+                                <g
+                                    className={cx(styles.planetDepth, o.direction < 0 && styles.reverse)}
+                                    style={vars({ "--co-period": `${o.period}s`, "--co-phase": phase(p.angle, o.direction) })}
+                                >
+                                    <g className={styles.planetPop} style={vars({ "--co-order": k })}>
+                                        <circle className={styles.rimFill} r={p.r + 2.5} />
+                                        <circle r={p.r} fill={`url(#${id(`planet-${p.paint}`)})`} />
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        );
+    };
+
+    const highlight = (ref?: Ref<SVGGElement>) => {
+        const o = orbit(HL.orbit);
+        return (
+            <g ref={ref} className={styles.particle}>
+                {HL.layers.map((l, i) => {
+                    const from = (l.length - LEAD) * 1000;
+                    return (
+                        <path
+                            key={i}
+                            className={styles.highlight}
+                            d={o.full}
+                            pathLength={1000}
+                            fill="none"
+                            stroke={l.color}
+                            strokeOpacity={l.opacity}
+                            strokeWidth={o.strokeWidth}
+                            strokeDasharray={`${l.length * 1000} ${1000 - l.length * 1000}`}
+                            style={vars({
+                                "--co-period": `${HL.period}s`,
+                                "--co-hl-from": from,
+                                "--co-hl-to": from + (HL.direction > 0 ? -1000 : 1000),
+                            })}
+                        />
+                    );
+                })}
+            </g>
+        );
+    };
+
+    /** Rings, sweeps, planets and highlight for one depth layer. */
+    const layer = (which: "back" | "front") => {
+        const order = which === "back" ? [...ART.orbits].reverse() : ART.orbits;
+        return order
+            .filter((o) => o.wraps || which === "back")
+            .map((o) => {
+                const d = o.wraps ? o[which] : o.full;
+                const planets = ART.planets.map((p, i) => [p, i] as const).filter(([p]) => p.orbit === o.id);
+                let movers: ReactNode = (
+                    <>
+                        {isReveal && (
+                            <path
+                                className={styles.sweep}
+                                style={vars({ "--co-order": ART.orbits.indexOf(o) })}
+                                d={o.full}
+                                pathLength={1}
+                                fill="none"
+                                strokeWidth={o.strokeWidth}
+                            />
+                        )}
+                        {planets.map(([p, i]) => planet(p, i))}
+                        {HL.orbit === o.id && highlight(which === "back" ? finalParticleRef : undefined)}
+                    </>
+                );
+                if (o.wraps) movers = <g clipPath={`url(#${id(`clip-${which}-${o.id}`)})`}>{movers}</g>;
+                return (
+                    <g key={o.id}>
+                        <path className={styles.rim} d={d} fill="none" strokeWidth={o.strokeWidth + 4} />
+                        <path className={styles.ring} d={d} fill="none" stroke={`url(#${id(`ring-${o.id}`)})`} style={vars({ "--co-sw": o.strokeWidth })} strokeWidth={o.strokeWidth} />
+                        {movers}
+                    </g>
+                );
+            });
+    };
+
     return (
         <span
             {...semantics}
-            className={[styles.root, className].filter(Boolean).join(" ")}
+            className={cx(styles.root, className)}
             data-variant={variant}
             data-surface={surface}
             data-paused={paused ? "true" : undefined}
@@ -121,188 +202,73 @@ export default function CyberOdysseyLoader({
             onAnimationEnd={onAnimationEnd}
         >
             {isLoader && <span className={styles.srOnly}>{name}</span>}
-            <svg className={styles.svg} viewBox={`0 0 ${VW} ${VH}`} aria-hidden="true" focusable="false">
+            <svg className={styles.svg} viewBox={`${VB.x} ${VB.y} ${VB.width} ${VB.height}`} aria-hidden="true" focusable="false">
                 <defs>
-                    <mask id={id("occ")} maskUnits="userSpaceOnUse" x="0" y="0" width={VW} height={VH}>
-                        <rect width={VW} height={VH} fill="#fff" />
-                        <path d={ART.occluderPath} fill="#000" />
-                    </mask>
+                    <linearGradient id={id("cyborg")} gradientUnits="userSpaceOnUse" x1="0" y1={C.gradient.y1} x2="0" y2={C.gradient.y2}>
+                        {C.gradient.stops.map((s) => (
+                            <stop key={s.offset} offset={s.offset} stopColor={s.color} />
+                        ))}
+                    </linearGradient>
                     {ART.orbits.map((o) => (
-                        <mask key={o.id} id={id(`stroke-${o.id}`)} maskUnits="userSpaceOnUse" x="0" y="0" width={VW} height={VH}>
-                            <path d={o.path} fill="none" stroke="#fff" strokeWidth={o.strokeWidth} />
-                        </mask>
+                        <linearGradient key={o.id} id={id(`ring-${o.id}`)} gradientUnits="userSpaceOnUse" x1={o.paint.x1} y1={o.paint.y1} x2={o.paint.x2} y2={o.paint.y2}>
+                            <stop offset="0" stopColor={o.paint.ends} />
+                            <stop offset=".3" stopColor={o.paint.body} />
+                            <stop offset=".7" stopColor={o.paint.body} />
+                            <stop offset="1" stopColor={o.paint.ends} />
+                        </linearGradient>
                     ))}
-                    {ART.orbits.flatMap((o) =>
-                        o.lobes.map((l, j) => {
-                            const [x, y] = unit(l.angle);
-                            return (
-                                <linearGradient key={`${o.id}-${j}`} id={id(`${o.id}-lobe-${j}`)} gradientUnits="userSpaceOnUse" x1={-x} y1={-y} x2={x} y2={y}>
-                                    <stop offset={Math.max(0, l.stops[0].offset - 0.0005)} stopColor={l.stops[0].color} stopOpacity={0} />
-                                    {l.stops.map((s, k) => (
-                                        <stop key={k} offset={s.offset} stopColor={s.color} />
-                                    ))}
-                                </linearGradient>
-                            );
-                        })
-                    )}
-                    {COMET_LOBES.map((l, j) => {
-                        const [x, y] = unit(l.angle);
-                        return (
-                            <linearGradient key={j} id={id(`comet-${j}`)} gradientUnits="userSpaceOnUse" x1={-x} y1={-y} x2={x} y2={y}>
-                                <stop offset={(l.p0 + 1) / 2} stopColor={l.color} stopOpacity={0} />
-                                <stop offset={1} stopColor={l.color} stopOpacity={l.opacity} />
-                            </linearGradient>
-                        );
-                    })}
-                    <radialGradient id={id("spark")}>
-                        <stop offset="0" stopColor="#ecfeff" />
-                        <stop offset=".22" stopColor="#a5f3fc" />
-                        <stop offset=".45" stopColor="#22d3ee" stopOpacity=".55" />
-                        <stop offset="1" stopColor="#22d3ee" stopOpacity="0" />
-                    </radialGradient>
+                    {Object.entries(ART.planetPaint).map(([k, stops]) => (
+                        <radialGradient key={k} id={id(`planet-${k}`)} cx=".36" cy=".32" r=".75">
+                            {stops.map((s) => (
+                                <stop key={s.offset} offset={s.offset} stopColor={s.color} />
+                            ))}
+                        </radialGradient>
+                    ))}
+                    <mask id={id("behind")} maskUnits="userSpaceOnUse" x={VB.x} y={VB.y} width={VB.width} height={VB.height}>
+                        <rect x={VB.x} y={VB.y} width={VB.width} height={VB.height} fill="#fff" />
+                        <g fill="none" stroke="#000" strokeWidth={C.stroke + 2 * C.gap}>
+                            <path d={C.headSilhouette + C.solids} fill="#000" strokeLinejoin="round" />
+                            <path d={C.torso} strokeLinejoin="round" />
+                            {ART.orbits
+                                .filter((o) => o.crumbs)
+                                .map((o) => (
+                                    <path key={o.id} d={o.crumbs} strokeWidth={o.strokeWidth + 2} />
+                                ))}
+                        </g>
+                    </mask>
+                    <mask id={id("knockout")} maskUnits="userSpaceOnUse" x={VB.x} y={VB.y} width={VB.width} height={VB.height}>
+                        <rect x={VB.x} y={VB.y} width={VB.width} height={VB.height} fill="#fff" />
+                        {ART.orbits
+                            .filter((o) => o.wraps)
+                            .map((o) => (
+                                <path key={o.id} d={o.front} fill="none" stroke="#000" strokeWidth={o.strokeWidth + 2 * C.gap} />
+                            ))}
+                    </mask>
+                    {ART.orbits
+                        .filter((o) => o.wraps)
+                        .flatMap((o) => [
+                            <clipPath key={`f-${o.id}`} id={id(`clip-front-${o.id}`)}>
+                                <path d={o.frontClip} />
+                            </clipPath>,
+                            <clipPath key={`b-${o.id}`} id={id(`clip-back-${o.id}`)}>
+                                <path d={o.backClip} />
+                            </clipPath>,
+                        ])}
                 </defs>
 
                 <g className={styles.intro}>
-                    <image className={styles.glow} href={ASSETS.glow} x="0" y="0" width={VW} height={VH} preserveAspectRatio="none" />
-                    <image
-                        className={styles.cyborg}
-                        href={isLoader ? ASSETS.cyborgSmall : ASSETS.cyborg}
-                        x="0"
-                        y="0"
-                        width={VW}
-                        height={VH}
-                    />
+                    <g mask={`url(#${id("behind")})`}>{layer("back")}</g>
 
-                    <g mask={`url(#${id("occ")})`}>
-                        {ART.orbits.map((o) => (
-                            <path key={o.id} className={styles.rim} d={o.path} fill="none" strokeWidth={o.strokeWidth + 4.5} />
-                        ))}
-
-                        {ART.orbits.map((o) => (
-                            <g key={o.id} mask={`url(#${id(`stroke-${o.id}`)})`}>
-                                <g transform={frame(o)}>
-                                    <g className={o.id === "outer" ? styles.spinOuter : o.id === "middle" ? styles.spinMiddle : undefined}>
-                                        <circle r="1.3" fill={o.base} />
-                                        {o.lobes.map((_, j) => (
-                                            <circle key={j} r="1.3" fill={`url(#${id(`${o.id}-lobe-${j}`)})`} />
-                                        ))}
-                                    </g>
-                                    {o.id === COMET.orbit && (
-                                        <g className={styles.particle}>
-                                            <g className={styles.spinComet}>
-                                                <g transform={`rotate(${COMET.start})`}>
-                                                    {COMET_LOBES.map((_, j) => (
-                                                        <circle key={j} r="1.3" fill={`url(#${id(`comet-${j}`)})`} />
-                                                    ))}
-                                                </g>
-                                            </g>
-                                        </g>
-                                    )}
-                                </g>
-                            </g>
-                        ))}
-
-                        {variant === "reveal" &&
-                            ART.orbits.map((o, k) => (
-                                <path
-                                    key={o.id}
-                                    className={styles.sweep}
-                                    style={vars({ "--co-order": k })}
-                                    d={o.path}
-                                    pathLength={1}
-                                    fill="none"
-                                    strokeWidth={o.strokeWidth}
-                                />
-                            ))}
-
-                        <g transform={frame(outer)}>
-                            <g className={styles.spinOuter}>
-                                {ART.planets.map((p, k) => {
-                                    const norm = 1 / (1 + PLANET_DEPTH * Math.sin((p.angle * Math.PI) / 180));
-                                    return (
-                                        <g key={k} transform={`rotate(${p.angle})`}>
-                                            <g transform={`translate(${p.rho} 0)`}>
-                                                <g className={styles.spinOuterCounter}>
-                                                    <g transform={`${unframe(outer, p.angle)} scale(${norm})`}>
-                                                        <g className={styles.planetDepth} style={vars({ "--co-phase": phase(p.angle, 1) })}>
-                                                            <g className={styles.planetPop} style={vars({ "--co-order": k })}>
-                                                                <circle className={styles.rimFill} r={p.r + 2.25} />
-                                                                <circle r={p.r} fill={p.color} />
-                                                            </g>
-                                                        </g>
-                                                    </g>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    );
-                                })}
-                            </g>
-                        </g>
-
-                        <Spark
-                            o={orbit(COMET.orbit)}
-                            start={COMET.start}
-                            r={COMET.glow * sparkBoost}
-                            fill={`url(#${id("spark")})`}
-                            spin={styles.spinComet}
-                            counter={styles.spinCometCounter}
-                            depth={styles.cometDepth}
-                            phaseValue={phase(COMET.start, -1)}
-                        />
-                        <Spark
-                            o={orbit(INNER_SPARK.orbit)}
-                            start={INNER_SPARK.start}
-                            r={INNER_SPARK.glow * sparkBoost}
-                            fill={`url(#${id("spark")})`}
-                            spin={styles.spinInner}
-                            counter={styles.spinInnerCounter}
-                            depth={styles.innerDepth}
-                            phaseValue={phase(INNER_SPARK.start, 1)}
-                            completionRef={finalParticleRef}
-                        />
+                    <g mask={`url(#${id("knockout")})`} fill="none" stroke={`url(#${id("cyborg")})`} strokeWidth={C.stroke}>
+                        <path d={C.dome} strokeLinejoin="round" />
+                        <path d={C.head + C.torso} strokeMiterlimit={4} />
+                        <path d={C.fill} fill={`url(#${id("cyborg")})`} stroke="none" />
+                        <path className={styles.pulse} d={C.fill} fill={ART.pulse.color} stroke="none" style={vars({ "--co-pulse": ART.pulse.peak })} />
                     </g>
+
+                    <g>{layer("front")}</g>
                 </g>
             </svg>
         </span>
-    );
-}
-
-function Spark({
-    o,
-    start,
-    r,
-    fill,
-    spin,
-    counter,
-    depth,
-    phaseValue,
-    completionRef,
-}: {
-    o: OrbitArt;
-    start: number;
-    r: number;
-    fill: string;
-    spin: string;
-    counter: string;
-    depth: string;
-    phaseValue: number;
-    completionRef?: Ref<SVGGElement>;
-}) {
-    return (
-        <g ref={completionRef} className={styles.particle} transform={frame(o)}>
-            <g className={spin}>
-                <g transform={`rotate(${start})`}>
-                    <g transform="translate(1 0)">
-                        <g className={counter}>
-                            <g transform={unframe(o, start)}>
-                                <g className={depth} style={vars({ "--co-phase": phaseValue })}>
-                                    <circle r={r} fill={fill} />
-                                </g>
-                            </g>
-                        </g>
-                    </g>
-                </g>
-            </g>
-        </g>
     );
 }

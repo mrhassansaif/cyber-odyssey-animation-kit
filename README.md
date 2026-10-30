@@ -1,10 +1,10 @@
 # Cyber Odyssey Animation Kit
 
-Self-contained, portable package of the **Cyber Odyssey** orbital logo animation as implemented for Capri Web Services.
+Self-contained, portable package of the **Cyber Odyssey** orbital logo for Capri Web Services: a fully vector static logo, a fully vector animated logo, and a React component that renders the same artwork.
 
-Copy this folder into another project and hand it to a Cursor agent (see `INTEGRATION_PROMPT.md`) to integrate the **existing** animation — do not rebuild it.
+Copy this folder into another project and hand it to a Cursor agent (see `INTEGRATION_PROMPT.md`) to integrate the **existing** artwork and animation — do not rebuild it.
 
-This kit does **not** replace or modify the live Capri site. The originating app continues to use its own copies under `src/components/branding/` and `public/branding/cyber-odyssey/`.
+This kit does **not** replace or modify the live Capri site.
 
 ---
 
@@ -12,15 +12,27 @@ This kit does **not** replace or modify the live Capri site. The originating app
 
 | Deliverable | Description |
 | --- | --- |
-| React component | `CyberOdysseyLoader` with variants `loader`, `hero`, `reveal` |
-| CSS Modules stylesheet | Orbital spin, depth, glow, reveal, pause, reduced-motion |
-| Generated geometry module | Measured orbit/planet data + public asset URL map |
-| Runtime rasters | Cyborg, small cyborg, glow PNGs |
-| Standalone animated SVG | Drop-in looping mark with embedded images + CSS |
-| Static orbits SVG | Separated vector orbit layer |
-| Original logo | Untouched source PNG (reference / regeneration) |
-| Generation scripts | Extract / analyze / inspect pipeline (optional `sharp`) |
-| Previews | Standalone HTML (SVG) + Next.js interactive reference |
+| Static logo SVG | `assets/generated/capri-web-services-logo.svg` — clean production mark, no animation, no filters |
+| Animated logo SVG | `assets/generated/cyber-odyssey-orbital.svg` — self-contained looping mark (SVG-embedded CSS) |
+| React component | `CyberOdysseyLoader` with variants `loader`, `hero`, `reveal`, rendering the same vector art inline |
+| CSS Modules stylesheet | Orbital spin, depth, reveal, pause, speed, dark-surface rim, reduced motion |
+| Generated geometry module | `component/cyberOdysseyArt.ts` — cyborg paths, orbits, planets, masks |
+| Vector generator | `scripts/build-cyber-odyssey-vector.mjs` — single source for all three outputs (no dependencies) |
+| Original logo | Untouched source PNG (reference) |
+| Legacy material | Raster cyborg layers, `orbits.svg` and the raster extraction pipeline, kept for reference only |
+| Previews | Standalone HTML (both SVGs on dark + light) + Next.js interactive reference |
+
+### What is fully vectorised
+
+Everything in the shipped artwork. The cyborg (helmet dome, visor frame, face, jaw, mouth guard, grille, neck, collar, shoulders, seams, placket), the three orbits, the planets and the travelling highlight are SVG paths and shapes. Neither final SVG nor the React component contains `<image>`, Base64 / data URIs, `<foreignObject>`, scripts or external references; `scripts/verify-kit-integrity.mjs` enforces this.
+
+### The mark
+
+- **Cyborg** — a clean redraw of the original line icon: centrelines measured from `assets/original/CapriWebServices-Logo.png`, then snapped to its symmetry axis and 45° construction. One 16-unit stroke weight, mitred chamfers, round joins only on the dome. Navy-violet → crimson → red gradient, as in the original.
+- **Orbits** — three nested ellipses tilted −25°, −27° and −32° (the original's rising diagonal, fanned for depth), thin indigo strokes with cyan-teal ends. The inner ring wraps the figure: in front across the chest, behind the helmet. The middle and outer rings run behind the figure.
+- **Occlusion** — the helmet, neck, shoulder pads and placket hide whatever passes behind them; elsewhere rings and planets pass behind the torso lines with a clearance gap. Where the inner ring crosses in front, the torso lines are knocked out around it (its path was solved so every cut is steep and leaves no slivers).
+- **Planets** — a cyan moon (inner, clockwise, 14 s), an indigo planet (middle, counter-clockwise, 23 s) and a navy giant (outer, clockwise, 38 s). They ride their ellipse exactly and swell ±6 % on the near side.
+- **Animated extras** — a short cyan light travelling along the outer ring (9 s) and a faint pulse in the mouth grille (5.2 s). The cyborg never moves.
 
 ---
 
@@ -36,30 +48,32 @@ cyber-odyssey-animation-kit/
 ├── component/                         ← reusable runtime source
 │   ├── CyberOdysseyLoader.tsx         ← React component (public API)
 │   ├── CyberOdysseyLoader.module.css  ← animation CSS
-│   └── cyberOdysseyArt.ts             ← geometry + asset URLs (generated)
+│   └── cyberOdysseyArt.ts             ← vector geometry (generated)
 ├── assets/
 │   ├── original/
 │   │   └── CapriWebServices-Logo.png  ← untouched source logo (921×725)
 │   └── generated/
-│       ├── cyborg.png                 ← runtime: full cyborg layer
-│       ├── cyborg-sm.png              ← runtime: loader-sized cyborg
-│       ├── cyborg-glow.png            ← runtime: energy glow
-│       ├── orbits.svg                 ← static vector orbits + planets
-│       └── cyber-odyssey-orbital.svg  ← standalone animated SVG
-├── scripts/                           ← regeneration / inspection (optional)
-│   ├── package.json                   ← sharp only (devDependency)
+│       ├── capri-web-services-logo.svg ← static vector logo
+│       ├── cyber-odyssey-orbital.svg   ← animated vector logo
+│       ├── cyborg.png                  ← legacy raster layer (reference only)
+│       ├── cyborg-sm.png               ← legacy raster layer (reference only)
+│       ├── cyborg-glow.png             ← legacy raster layer (reference only)
+│       └── orbits.svg                  ← legacy orbit layer (reference only)
+├── scripts/
+│   ├── build-cyber-odyssey-vector.mjs ← builds both SVGs + cyberOdysseyArt.ts (no deps)
+│   ├── verify-kit-integrity.mjs       ← kit-local integrity check
+│   ├── package.json                   ← sharp only (legacy pipeline)
 │   ├── README.md
-│   ├── extract-cyber-odyssey-layers.mjs
+│   ├── extract-cyber-odyssey-layers.mjs  ← legacy raster pipeline
 │   ├── analyze-cyber-odyssey-logo.mjs
 │   ├── inspect-cyber-odyssey-diff.mjs
 │   ├── inspect-cyber-odyssey-residue.mjs
 │   ├── cyber-odyssey-geometry.mjs
 │   ├── cyber-odyssey-svg.mjs
-│   ├── cyber-odyssey-measurements.json
-│   └── verify-kit-integrity.mjs       ← kit-local integrity check
+│   └── cyber-odyssey-measurements.json
 └── preview/
     ├── standalone/
-    │   └── index.html                 ← zero-React SVG preview
+    │   └── index.html                 ← both SVGs, dark + light, several sizes
     └── next-app-reference/
         ├── README.md
         ├── page.tsx                   ← Next metadata wrapper
@@ -72,14 +86,12 @@ cyber-odyssey-animation-kit/
 | --- | --- | --- |
 | `component/CyberOdysseyLoader.tsx` | Yes | Animation component |
 | `component/CyberOdysseyLoader.module.css` | Yes | Motion / a11y CSS |
-| `component/cyberOdysseyArt.ts` | Yes | Geometry + `/branding/cyber-odyssey/*` URLs |
-| `assets/generated/cyborg.png` | Yes | Hero/reveal cyborg |
-| `assets/generated/cyborg-sm.png` | Yes | Loader cyborg |
-| `assets/generated/cyborg-glow.png` | Yes | Glow layer |
-| `assets/generated/cyber-odyssey-orbital.svg` | Optional | Framework-free animated mark |
-| `assets/generated/orbits.svg` | Optional | Static orbit layer / tooling |
-| `assets/original/CapriWebServices-Logo.png` | No | Source of truth for regeneration |
-| `scripts/*` | No | Regenerate / inspect artwork |
+| `component/cyberOdysseyArt.ts` | Yes | Vector geometry + optional SVG asset URLs |
+| `assets/generated/capri-web-services-logo.svg` | Optional | Static logo for `<img>`, CSS, brand use |
+| `assets/generated/cyber-odyssey-orbital.svg` | Optional | Framework-free animated logo |
+| `assets/generated/cyborg*.png`, `orbits.svg` | No | Legacy reference material; nothing depends on them |
+| `assets/original/CapriWebServices-Logo.png` | No | Source of truth |
+| `scripts/*` | No | Build / verify / legacy inspection |
 | `preview/*` | No | Demonstration only |
 
 ---
@@ -97,52 +109,31 @@ The React component is **not** framework-independent.
 | **DOM / CSS animations** | No Framer Motion, GSAP, or other animation libraries. |
 | **Theme class** | `surface="auto"` looks for an ancestor `.dark` via `:global(.dark)`. |
 
+The two SVG files need nothing: they work as plain `<img>` / CSS background / `<object>` assets.
+
 ### Package / peer dependencies
 
-**Runtime (host app must already provide):**
+**Runtime (host app must already provide):** `react`, `react-dom`, CSS Modules support in the bundler.
 
-- `react`
-- `react-dom` (typical host)
-- CSS Modules support in the bundler
-
-**Not required at runtime:**
-
-- `next` (only needed if you keep `"use client"` / App Router preview as-is)
-- `tailwindcss` (only used by the Next preview chrome)
-- `sharp` (only for `scripts/` regeneration)
-
-**Optional regeneration:** see `scripts/package.json` (`sharp`).
+**Not required at runtime:** `next` (only for `"use client"` / the App Router preview), `tailwindcss` (Next preview chrome only), `sharp` (legacy raster pipeline only). The component no longer loads any image files.
 
 ---
 
 ## Asset path mapping
 
-`cyberOdysseyArt.ts` exposes:
+The React component renders its artwork inline, so it needs **no public assets**. To serve the standalone SVGs as well, copy them to your public folder; `cyberOdysseyArt.ts` exposes the conventional URLs:
 
 ```ts
 CYBER_ODYSSEY_ASSETS = {
-  cyborg: "/branding/cyber-odyssey/cyborg.png",
-  cyborgSmall: "/branding/cyber-odyssey/cyborg-sm.png",
-  glow: "/branding/cyber-odyssey/cyborg-glow.png",
+  logo: "/branding/cyber-odyssey/capri-web-services-logo.svg",
+  orbital: "/branding/cyber-odyssey/cyber-odyssey-orbital.svg",
 }
 ```
 
-**Integration mapping (typical static host / Next `public/`):**
-
 ```
-kit/assets/generated/cyborg.png       →  public/branding/cyber-odyssey/cyborg.png
-kit/assets/generated/cyborg-sm.png    →  public/branding/cyber-odyssey/cyborg-sm.png
-kit/assets/generated/cyborg-glow.png  →  public/branding/cyber-odyssey/cyborg-glow.png
+kit/assets/generated/capri-web-services-logo.svg → public/branding/cyber-odyssey/capri-web-services-logo.svg
+kit/assets/generated/cyber-odyssey-orbital.svg   → public/branding/cyber-odyssey/cyber-odyssey-orbital.svg
 ```
-
-Optional:
-
-```
-kit/assets/generated/cyber-odyssey-orbital.svg → public/branding/cyber-odyssey/cyber-odyssey-orbital.svg
-kit/assets/generated/orbits.svg               → public/branding/cyber-odyssey/orbits.svg
-```
-
-If your app uses a different public base path, update `CYBER_ODYSSEY_ASSETS` (or your asset pipeline) accordingly. Do not leave broken absolute paths.
 
 ---
 
@@ -169,19 +160,19 @@ import CyberOdysseyLoader from "./CyberOdysseyLoader"; // adjust path
 
 | Variant | Behavior |
 | --- | --- |
-| `loader` | Compact status indicator (`role="status"`), smaller default size, faster default speed, uses `cyborg-sm` |
+| `loader` | Compact status indicator (`role="status"`), 64 px default, faster default speed, rings drawn heavier so they survive small sizes |
 | `hero` | Looping brand mark |
-| `reveal` | Intro fade + orbit sweeps + planet pop + particle fade-in, then seamless loop; fires `onRevealComplete` |
+| `reveal` | Intro fade + a light sweep along each orbit + planet pop + highlight fade-in, then the seamless loop; fires `onRevealComplete` |
 
 ### Preserved behaviors
 
-- Stationary cyborg; independently spinning orbital rings / tonal lobes
-- Planets on the outer orbit with depth scaling + counter-rotation
-- Comet + inner spark particles with glow
+- Stationary cyborg; independently orbiting planets with distinct speeds and directions
+- Correct front/back layering and occlusion (same structure as the SVG files)
 - Seamless CSS loops; `--co-speed` multiplier
 - `paused` → `animation-play-state: paused`
-- `prefers-reduced-motion: reduce` disables motion (loader keeps a slow opacity breath)
-- Unique SVG paint-server IDs via React `useId` (safe with multiple instances)
+- `prefers-reduced-motion: reduce` stops all motion and shows the static composition (loader keeps a slow opacity breath)
+- `surface="dark"` (or `auto` under `.dark`) adds a faint cyan rim to rings and planets
+- Unique SVG definition IDs via React `useId` (safe with multiple instances)
 
 ---
 
@@ -209,45 +200,38 @@ import CyberOdysseyLoader from "./CyberOdysseyLoader"; // adjust path
 
 ## Previewing
 
-### A) Standalone SVG preview (no React / no Capri site)
+### A) Standalone SVG preview (no React)
 
-1. From the **parent** of this kit folder, serve statically, e.g.  
-   `npx --yes serve cyber-odyssey-animation-kit`
-2. Open `/preview/standalone/`
-3. Or open `preview/standalone/index.html` directly (some browsers block `file://` SVG `<object>` loads).
+Open `preview/standalone/index.html`. It loads the real files from `assets/generated/` and shows the animated and static logos side by side on a dark and a light surface, plus small sizes. If your browser blocks `file://` images, serve the kit folder (e.g. `npx --yes serve .` from the kit root) and open `/preview/standalone/`.
 
-This previews **only** `cyber-odyssey-orbital.svg` (looping standalone artwork). It does **not** expose pause, speed, reveal, or surface props.
+Reduced motion: enable the OS / browser setting (Chrome DevTools → Rendering → "prefers-reduced-motion: reduce"); the animated SVG then holds the static composition.
 
 ### B) Full interactive preview (Next.js reference)
 
-Source: `preview/next-app-reference/`.
+Source: `preview/next-app-reference/` — loader / hero / reveal, pause, speed, surfaces. See `preview/next-app-reference/README.md`.
 
-In the originating Capri app this is the route `/preview/logo-animation` (Tailwind chrome + live `CyberOdysseyLoader`). To reuse it elsewhere, follow `preview/next-app-reference/README.md`.
-
-### C) Standalone animated SVG as an asset
+### C) Using the SVG files directly
 
 ```html
+<img src="/branding/cyber-odyssey/capri-web-services-logo.svg" alt="Capri Web Services" width="320" />
 <img src="/branding/cyber-odyssey/cyber-odyssey-orbital.svg" alt="Capri Web Services" width="420" />
-<!-- or -->
-<object type="image/svg+xml" data="/branding/cyber-odyssey/cyber-odyssey-orbital.svg"></object>
 ```
 
-**SVG ID note:** `orbits.svg` and `cyber-odyssey-orbital.svg` share fixed `id` prefixes (`co-occ`, `co-stroke-*`, etc.). Do not inline both into the same HTML document without renaming IDs. The React component avoids collisions via `useId`.
+**SVG ID note:** both SVG files use fixed `co-*` IDs. Use them as images (`<img>`, CSS) rather than inlining both into one HTML document; if you must inline, rename the IDs. The React component avoids collisions via `useId`.
 
 ---
 
-## Regenerating artwork
+## Regenerating the artwork
 
-Already-generated assets are included. Regeneration is optional.
+All three vector outputs come from `scripts/build-cyber-odyssey-vector.mjs` (plain Node, no dependencies):
 
 ```bash
-cd scripts
-npm install
-cd ..
-node scripts/extract-cyber-odyssey-layers.mjs
+node scripts/build-cyber-odyssey-vector.mjs          # write the SVGs + component/cyberOdysseyArt.ts
+node scripts/build-cyber-odyssey-vector.mjs --check  # fail if any output is out of date
+node scripts/verify-kit-integrity.mjs                # full kit check
 ```
 
-Details: `scripts/README.md`. The original PNG is never modified; the extract script verifies its SHA-256.
+Edit geometry, colours or timing in that script, never in the generated files. The legacy raster pipeline (`extract-cyber-odyssey-layers.mjs`, needs `sharp`) only refreshes the legacy reference layers; see `scripts/README.md`.
 
 ---
 
@@ -255,8 +239,8 @@ Details: `scripts/README.md`. The original PNG is never modified; the extract sc
 
 1. Copy the entire `cyber-odyssey-animation-kit/` directory.
 2. Point Cursor at it and paste `INTEGRATION_PROMPT.md` (fill in the kit path).
-3. Or manually: copy `component/` into your source tree, copy `assets/generated/` into your public asset path, wire imports, map theme `.dark` if needed.
-4. Run the destination’s type-check / lint / build / visual checks.
+3. Or manually: copy `component/` into your source tree, optionally copy the two SVGs into your public folder, wire imports, map theme `.dark` if needed.
+4. Run the destination's type-check / lint / build / visual checks.
 
 Do not commit secrets; this kit contains none.
 
@@ -266,16 +250,16 @@ Do not commit secrets; this kit contains none.
 
 | Issue | Guidance |
 | --- | --- |
-| Images 404 | Confirm public mapping to `/branding/cyber-odyssey/*` or update `CYBER_ODYSSEY_ASSETS`. |
 | CSS not applied | Ensure CSS Modules are enabled; class names must hash. |
 | `surface="auto"` never adds rim | Host needs ancestor `.dark`, or pass `surface="dark"`. |
 | SSR / hydration | Component is client-oriented (`"use client"`); mount on the client in Next App Router. |
-| Reduced motion “frozen” | Expected: spins/particles off; loader still breathes. |
-| Reveal callback never fires | Reduced motion completes immediately via `matchMedia`; otherwise wait for final particle animation end. |
+| Reduced motion "frozen" | Expected: the static composition is shown; the loader still breathes. |
+| Reveal callback never fires | Reduced motion completes immediately via `matchMedia`; otherwise wait for the highlight fade-in to end. |
+| Tiny sizes | Below ~48 px the orbits become hairlines; use the `loader` variant (heavier rings) or the static logo at ≥ 64 px for icon use. |
 | Tailwind missing in preview | Only the Next reference chrome needs Tailwind; the component does not. |
 | `cyber-odyssey-logo.png` missing | Correct — see `docs/ORIGINAL_LOGO.md`. Use `CapriWebServices-Logo.png`. |
-| Dual SVG ID clashes | Don’t inline both packaged SVGs on one page without uniquifying IDs. |
-| Want Vite/non-Next | Keep React + CSS Modules; drop or replace `"use client"`; remap assets. |
+| Inlining both SVGs on one page | Rename the fixed `co-*` IDs first, or use them as images. |
+| Want Vite/non-Next | Keep React + CSS Modules; drop or replace `"use client"`. |
 
 ---
 
@@ -285,4 +269,4 @@ See `manifest.json` for SHA-256 hashes of packaged files. The original logo hash
 
 `2a2064f933be5575647b146a899686bc6137e9f123bb35cbb96ac045e0f04c5a`
 
-Component TSX/CSS in this kit are byte-identical to the originating Capri files at packaging time. `cyberOdysseyArt.ts` matches the originating **data payload**; only the kit header comment was adjusted for portable paths.
+The component, its stylesheet and the generated art module were redesigned in this kit (vector artwork); they no longer match the originating Capri site's raster-based files.
